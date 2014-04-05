@@ -5,31 +5,36 @@ import gspread
 
 from normalize import *
 
-keywords = {"HITTERS", "RESERVES", "PITCHERS"}
-password = getpass.getpass()
-
-gc = gspread.login('andrew.whitaker@mac.com', password)
-sh = gc.open_by_key('0AlGIrGDLUd5OdHpDSm55Y1Utd0hrQUJDN1NRRVVUTlE')
-
-others = ['Carter', 'Dugan', 'Duke', 'Kolman', 'Nelson', 'Owsen', 'Prowell', 'Stack', 'Valla']
-me = ['Whitaker']
-_all = others + me
+KEYWORDS = {"HITTERS", "RESERVES", "PITCHERS"}
+OTHERS = ['Carter', 'Dugan', 'Duke', 'Kolman', 'Nelson', 'Owsen', 'Prowell', 'Stack', 'Valla']
+ME = ['Whitaker']
+ALL = OTHERS + ME
 
 
-sheets = sh.worksheets()
-rosters = {} # map from player name to set of players
+def fetch_rosters(username='andrew.whitaker@mac.com', password=None):
+    if not password:
+        password = getpass.getpass()
+    gc = gspread.login(username, password)
+    sh = gc.open_by_key('0AlGIrGDLUd5OdHpDSm55Y1Utd0hrQUJDN1NRRVVUTlE')
 
-for player in _all:
-    ws = sh.worksheet(player)
-    roster = set()
-    rows = ws.get_all_values()
-    for row in rows[4:]:
-        if 'RELEASED' in row:
-            break
-        name = row[1]
-        if name not in keywords:
-            roster.add(normalize(name))
+    sheets = sh.worksheets()
+    rosters = {} # map from player name to set of players
 
-    rosters[player] = roster
+    for player in ALL:
+        ws = sh.worksheet(player)
+        roster = set()
+        rows = ws.get_all_values()
+        for row in rows[4:]:
+            if 'RELEASED' in row:
+                break
+            name = row[1]
+            if name not in KEYWORDS:
+                roster.add(normalize(name))
 
-print rosters
+        rosters[player] = roster
+
+    return rosters
+
+if __name__ == '__main__':
+    rosters = fetch_rosters()
+    print rosters['Whitaker']
