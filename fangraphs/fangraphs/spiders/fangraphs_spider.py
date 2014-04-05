@@ -3,12 +3,13 @@ from scrapy.selector import Selector
 
 from fangraphs.items import *
 
+TEMPLATE = 'http://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=all&qual=0&type=6&season=2014&month=0&season1=2014&ind=0&team=%d&rost=0&age=0&filter=&players=0'
+TEAMS = [1, 21, 14, 11, 2, 13, 12, 3, 6, 9, 10]
+
 class FanGraphsSpider(Spider):
     name = "fangraphs"
     allowed_domains = ["www.fangraphs.com"]
-    start_urls = [
-        'http://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=all&qual=0&type=6&season=2014&month=0&season1=2014&ind=0&team=11&rost=0&age=0&filter=&players=0'
-    ]
+    start_urls = [TEMPLATE % x for x in TEAMS]
 
     def parse(self, response):
         sel = Selector(response)
