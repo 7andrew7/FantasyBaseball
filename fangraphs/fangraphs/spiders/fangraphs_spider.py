@@ -31,8 +31,6 @@ class FanGraphsSpider(Spider):
             s = it.next().xpath('a/text()').extract()[0]
             return s
 
-        out = []
-
         while True:
             try:
                 idx = next_float()
@@ -49,12 +47,10 @@ class FanGraphsSpider(Spider):
                 war = next_float()
                 dollars = next_string()
 
-                print name, rar
                 item = FangraphsItem()
                 item['name'] = name
                 item['rar'] = rar
-                out.append(item)
+                yield item
 
             except StopIteration:
-                return out
-
+                break
